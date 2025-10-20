@@ -79,24 +79,28 @@ class Board:
         (row, column) = action
         self.board[row][column] = player
 
-    def maximize(self):
+    def maximize(self, alpha = -math.inf, beta = math.inf):
         if self.isTerminal():
             return self.value()
 
         value = -math.inf
         for action in self.actions():
-            value = max(value, self.result(action, self.maxPlayer).minimize())
-
+            value = max(value, self.result(action, self.maxPlayer).minimize(alpha, beta))
+            if value >= beta:
+                return value
+            alpha = max(alpha, value)
         return value
 
-    def minimize(self):
+    def minimize(self, alpha = -math.inf, beta = math.inf):
         if self.isTerminal():
             return self.value()
 
         value = math.inf
         for action in self.actions():
-            value = min(value, self.result(action, self.minPlayer).maximize())
-
+            value = min(value, self.result(action, self.minPlayer).maximize(alpha, beta))
+            if value <= alpha:
+                return value
+            beta = min(beta, value)
         return value
 
     def getBestMove(self, player):
